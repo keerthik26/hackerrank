@@ -11,9 +11,11 @@ import static java.lang.Math.sqrt;
 
 public class SummationOfPrimesSolution {
     public static void main(String args[] ) throws Exception {
-        runTests();
+        //runTests();
         Scanner scanner = new Scanner(System.in);
         int numOfInputLines =  Integer.parseInt(scanner.nextLine().trim());
+
+        //System.out.println("Start: " + startTime);
         SummationOfPrimes sol = new SummationOfPrimes();
         List<Long> result = new ArrayList<>(numOfInputLines);
         for (int i = 0; i < numOfInputLines; i++) {
@@ -23,6 +25,7 @@ public class SummationOfPrimesSolution {
             result.add(sol.summationOfPrimes(left,right));
         }
         result.stream().forEach(System.out::println);
+
     }
 
     static void runTests(){
@@ -37,18 +40,17 @@ class SummationOfPrimes {
     static final int MAX_NUMBER = 1000000;
     static List<Integer> primes = null;
     public SummationOfPrimes() {
-        primes = getPrimes(MAX_NUMBER);
+        long startTime = System.currentTimeMillis();
+        primes = primeNumbersTill(MAX_NUMBER);
+        System.out.println("Time: " + (System.currentTimeMillis() - startTime));
+
     }
 
-   /* List<Long> summationOfPrimes(List<List<Integer>> input){
-        return input.stream().map(limit -> {
-            return primes.stream().mapToLong(number -> (long) number).filter(number -> number >= limit.get(0) && number <= limit.get(1)).reduce(0,Long::sum);
-        }).collect(Collectors.toList());
-    }*/
    Long summationOfPrimes(int left, int right){
-       return primes.stream().mapToLong(number -> (long) number).filter(number -> number >= left && number <= right).reduce(0,Long::sum);
+       return primes.stream().mapToLong(number -> (long) number).filter(number -> number >= left && number <= right).sum();
    }
 
+   /*Using For Loop*/
     List<Integer> getPrimes(int number){
         boolean[] composites = new boolean[number];
         composites[0] = true;
@@ -60,4 +62,26 @@ class SummationOfPrimes {
         }
         return IntStream.rangeClosed(1, number).filter(integer -> !composites[integer-1]).boxed().collect(Collectors.toList());
     }
+
+    /*Above getPrimes method is re-written using Java 8 Streams but it is inefficient */
+    List<Integer> getPrimesJava8(int number){
+        boolean[] composites = new boolean[number+1];
+        IntStream.rangeClosed(2, (int) ceil(sqrt(number))).parallel().flatMap(factor -> IntStream.rangeClosed(factor + 1, number).filter(value -> (((value % factor) == 0)))).forEach(
+              integer ->   composites[integer] = true
+        );
+
+        return IntStream.rangeClosed(2, number).filter(integer -> !composites[integer]).boxed().collect(Collectors.toList());
+    }
+
+    /*This is best Java 8 approach */
+    public  List<Integer> primeNumbersTill(int n) {
+        return IntStream.rangeClosed(2, n)
+                .filter(x -> isPrime(x)).boxed()
+                .collect(Collectors.toList());
+    }
+    private  boolean isPrime(int number) {
+        return IntStream.rangeClosed(2, (int) (Math.sqrt(number)))
+                .noneMatch(n -> number % n == 0);
+    }
+
 }
