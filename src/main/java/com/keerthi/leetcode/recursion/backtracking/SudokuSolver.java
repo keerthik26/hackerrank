@@ -146,12 +146,28 @@ public class SudokuSolver {
     }
 
     public static void main(String[] args) {
-        int a = 3;
-        char ch = '3';
-        System.out.println(Integer.valueOf(ch - '0'));
-        Set<Integer> set = new HashSet<>();
+       SudokuSolver solver = new SudokuSolver();
+       char[][] question = { {'.','.','.','.','5','.','.','.','.'},{'.','.','.','7','.','.','1','.','2'},{'.','4','.','.','9','.','.','.','8'},
+            {'.','6','.','4','3','.','8','9','.'},{'7','.','.','.','.','.','.','.','.'},
+            {'.','.','.','8','.','.','.','.','6'},
+            {'2','.','4','.','.','.','.','.','.'},
+            {'1','5','.','.','.','.','.','.','.'},
+            {'.','3','.','.','.','9','.','5','4'}
+        };
+       solver.solveSudoku(question);
+       solver.displayBoard();
     }
 
+    public void displayBoard(){
+        System.out.println("[");
+        for (char[] row : board) {
+            for (char col : row) {
+                System.out.print(col  + " ");
+            }
+            System.out.println("");
+        }
+        System.out.println("]");
+    }
 }
 
 class Cell{
